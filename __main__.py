@@ -31,6 +31,37 @@ def run_exercise(conn, exercise):
 
     print(exercise["explanation"])
 
+    # Quiz questions
+    questions = exercise.get("questions", [])
+    if not questions:
+        return
+
+    correct = 0
+    print(f"  --- Quiz: {len(questions)} questions ---\n")
+
+    for qi, q in enumerate(questions, 1):
+        print(f"  Q{qi}. {q['question']}")
+        for opt in q["options"]:
+            print(f"      {opt}")
+
+        while True:
+            try:
+                answer = input("\n  Your answer (A/B/C/D): ").strip().upper()
+            except (EOFError, KeyboardInterrupt):
+                print()
+                return
+            if answer in ("A", "B", "C", "D"):
+                break
+            print("  Please enter A, B, C, or D.")
+
+        if answer == q["answer"]:
+            correct += 1
+            print(f"  \033[32mCorrect!\033[0m {q['explanation']}\n")
+        else:
+            print(f"  \033[31mWrong.\033[0m The answer is {q['answer']}. {q['explanation']}\n")
+
+    print(f"  Score: {correct}/{len(questions)}")
+
 
 def show_help():
     print("\n--- Quick SQL Reference ---\n")
@@ -95,33 +126,44 @@ def main():
     print("\nDatabase ready — 6 tables loaded.\n")
     show_tables()
 
-    print("OPTIONS:")
-    print("  1) Guided exercises    — 7 topics with queries + explanations")
-    print("  2) Interactive SQL     — free sandbox, write anything")
-    print("  3) Practice mode       — solve challenges with hints  [14 challenges]")
-    print("  4) Fix the bug         — find errors in broken SQL    [9 bugs]")
-    print("  5) Full session        — all modes in sequence")
-    print("  q) Quit\n")
+    while True:
+        print("OPTIONS:")
+        print("  1) Guided exercises    — 7 topics with queries + quiz")
+        print("  2) Interactive SQL     — free sandbox, write anything")
+        print("  3) Practice mode       — solve challenges with hints  [14 challenges]")
+        print("  4) Fix the bug         — find errors in broken SQL    [9 bugs]")
+        print("  5) Full session        — all modes in sequence")
+        print("  q) Quit\n")
 
-    choice = input("Choose [1/2/3/4/5/q]: ").strip()
+        try:
+            choice = input("Choose [1/2/3/4/5/q]: ").strip()
+        except (EOFError, KeyboardInterrupt):
+            break
 
-    if choice == "1":
-        run_guided_exercises(conn)
-    elif choice == "2":
-        interactive_mode(conn)
-    elif choice == "3":
-        run_practice_mode(conn, challenges)
-    elif choice == "4":
-        run_bugfix_mode(conn, bugs)
-    elif choice == "5":
-        print("\n--- Starting with guided exercises ---")
-        run_guided_exercises(conn)
-        print("\n--- Now: practice challenges ---")
-        run_practice_mode(conn, challenges)
-        print("\n--- Now: fix the bug ---")
-        run_bugfix_mode(conn, bugs)
-        print("\n--- Finally: free sandbox ---")
-        interactive_mode(conn)
+        if choice in ("q", "Q"):
+            break
+        elif choice == "1":
+            run_guided_exercises(conn)
+        elif choice == "2":
+            interactive_mode(conn)
+        elif choice == "3":
+            run_practice_mode(conn, challenges)
+        elif choice == "4":
+            run_bugfix_mode(conn, bugs)
+        elif choice == "5":
+            print("\n--- Starting with guided exercises ---")
+            run_guided_exercises(conn)
+            print("\n--- Now: practice challenges ---")
+            run_practice_mode(conn, challenges)
+            print("\n--- Now: fix the bug ---")
+            run_bugfix_mode(conn, bugs)
+            print("\n--- Finally: free sandbox ---")
+            interactive_mode(conn)
+        else:
+            print("  Invalid choice, try again.\n")
+            continue
+
+        print()
 
     conn.close()
     print("Done!")

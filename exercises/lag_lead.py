@@ -29,5 +29,25 @@ LAG(column, N) looks N rows BACK.  LEAD(column, N) looks N rows FORWARD.
 Default N = 1. First row's LAG is always NULL (no previous row).
 
 Essential for: time-series analysis, detecting trends, calculating deltas.
-"""
+""",
+    "questions": [
+        {
+            "question": "What does LAG(revenue) return for the FIRST row in the result?",
+            "options": ["A) 0", "B) The same row's revenue", "C) NULL", "D) An error"],
+            "answer": "C",
+            "explanation": "There is no previous row for the first row, so LAG returns NULL. You can provide a default: LAG(revenue, 1, 0) to return 0 instead.",
+        },
+        {
+            "question": "You want to compare each row with the row TWO positions ahead. Which function do you use?",
+            "options": ["A) LAG(column, 2)", "B) LEAD(column, 2)", "C) LAG(column, -2)", "D) NEXT(column, 2)"],
+            "answer": "B",
+            "explanation": "LEAD looks forward. LEAD(column, 2) skips one row and returns the value from two rows ahead. LAG(column, 2) looks two rows back.",
+        },
+        {
+            "question": "LAG and LEAD require which clause to determine row order?",
+            "options": ["A) GROUP BY", "B) PARTITION BY", "C) ORDER BY inside OVER()", "D) WHERE"],
+            "answer": "C",
+            "explanation": "LAG/LEAD need ORDER BY inside OVER() to know which row is 'previous' or 'next'. Without it, the row order is undefined.",
+        },
+    ],
 }
